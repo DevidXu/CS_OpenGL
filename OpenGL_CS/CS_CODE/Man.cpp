@@ -6,6 +6,8 @@ Camera a_camera;
 glm::mat4 a_projection;
 glm::mat4 a_view;
 
+bool ManInit = false;
+
 // Here angle is degree
 void Rotate(Node *n, float angle, float x, float y, float z)
 {
@@ -63,6 +65,7 @@ Man::Man()
 	jump = 0;
 	shoot = 0;
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	id = -1;
 }
 
 Man::~Man()
@@ -74,6 +77,17 @@ Man::~Man()
 void Man::SetShoot(bool ifshoot)
 {
 	shoot = ifshoot;
+}
+
+void Man::SetState(bool ifmove)
+{
+	state = ifmove;
+}
+
+void Man::DeduceLife(float de_life)
+{
+	life -= de_life;
+	harm += de_life;
 }
 
 void Man::Init()
@@ -90,7 +104,8 @@ void Man::Init()
 	body[8].Init("rightthigh");
 	body[9].Init("rightshank");
 
-	std::cout << "Body Shaders are loaded successfullly! Body initialization complete!" << std::endl;
+	if (!ManInit)
+		std::cout << "Body Shaders are loaded successfullly! Body initialization complete!" << std::endl;
 
 	// Create the Node bone tree
 	for (int i = 0; i < bone_num; i++)
@@ -113,13 +128,13 @@ void Man::Init()
 
 	node[2]->S = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.12f, 0.06f));
 	model = glm::translate(glm::mat4(), glm::vec3(0.25f, 0.18f, 0.0f));
-	node[2]->Assign(node[4], node[3], model, -35.0f, -55.0f, NULL, &Bias_Rotate);
+	node[2]->Assign(node[4], node[3], model, -40.0f, -50.0f, NULL, &Bias_Rotate);
 	node[2]->BR(node[2], 45.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.2f);
 
 	node[3]->S = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.15f, 0.06f));
 	model = glm::translate(glm::mat4(), glm::vec3(0.0f, -0.25f, 0.0f));
-	node[3]->Assign(NULL, NULL, model, 80.0f, 0.0f, NULL,  &Bias_Rotate);
-	node[3]->BR(node[3], -80.0f, 0.0f, 0.15f, 0.0f, 1.0f, 0.1f, 0.4f);
+	node[3]->Assign(NULL, NULL, model, 70.0f, 0.0f, NULL,  &Bias_Rotate);
+	node[3]->BR(node[3], -70.0f, 0.0f, 0.15f, 0.0f, 1.0f, 0.1f, 0.3f);
 
 	node[4]->S = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.12f, 0.06f));
 	model = glm::translate(glm::mat4(), glm::vec3(-0.25f, 0.18f, 0.0f));
@@ -147,12 +162,21 @@ void Man::Init()
 	model = glm::translate(glm::mat4(), glm::vec3(0.0f, -0.38f, 0.0f));
 	node[9]->Assign(NULL, NULL, model, 30.0f, 0.0f, NULL, &Bias_Rotate);
 
-	std::cout << "Body Bones are connected successfullly! Please wait for the process..." << std::endl;
+	if (!ManInit)
+	{
+		std::cout << "Body Bones are connected successfullly! Please wait for the process..." << std::endl;
+		ManInit = true;
+	}
 
 	post.Init();
 }
 
 void Man::Update(GLfloat deltatime, GLboolean* keys)
+{
+	Run(deltatime, keys);
+}
+
+void MainMan::Update(GLfloat deltatime, GLboolean* keys)
 {
 	post.Update(deltatime, shoot);
 	Run(deltatime, keys);
@@ -167,21 +191,25 @@ void Man::Run(GLfloat deltatime, GLboolean *keys)
 		state = 1;
 	}
 
-	node[2]->BR(node[2], deltatime*3.0f, 0.0f, 0.1f, 0.0f, 1.0f, -2.0f, 1.0f);
-	node[4]->BR(node[4], deltatime*3.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, -0.2f);
+	node[2]->BR(node[2], deltatime*5.0f, 0.0f, 0.1f, 0.0f, 1.0f, -2.0f, 1.0f);
+	node[4]->BR(node[4], deltatime*5.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, -0.2f);
 
-	node[6]->BR(node[6], deltatime*20.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
-	node[7]->BR(node[7], deltatime*10.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
-	node[8]->BR(node[8], deltatime*20.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
-	node[9]->BR(node[9], deltatime*10.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
+	node[6]->BR(node[6], deltatime*30.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
+	node[7]->BR(node[7], deltatime*20.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
+	node[8]->BR(node[8], deltatime*30.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
+	node[9]->BR(node[9], deltatime*20.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f);
 }
 
 void Man::Render(Camera &camera, glm::mat4 &projection, glm::mat4 &view, Gun &gun)
 {
+	if (life < 0.0f) return;
+
 	a_camera = camera;
 	a_projection = projection;
 	a_view = view;
 
+	float n_yaw = 90.0f - front;
+	node[0]->R(node[0], n_yaw - node[0]->rotate, 0.0f, 1.0f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(), position);
 	Draw_Node(node[0], model, true);
 
@@ -200,8 +228,14 @@ void MainMan::GetPostion(Camera &camera)
 	node[0]->R(node[0], yaw-node[0]->rotate, 0.0f, 1.0f, 0.0f);
 }
 
+void MainMan::GivePosition(Camera &camera)
+{
+	camera.Position = position;
+}
+
 void MainMan::Render(Camera &camera, glm::mat4 &projection, glm::mat4 &view, Gun &gun)
 {
+	front = camera.Yaw;
 	a_camera = camera;
 	a_projection = projection;
 	a_view = view;

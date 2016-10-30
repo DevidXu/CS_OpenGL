@@ -39,7 +39,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "Startign GLFW successfully!" << std::endl;
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Shining Model", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "CS_GAME", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Set the required callback functions
@@ -75,8 +75,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		
-		NewGame.ProcessInput(deltaTime);
+
+		NewGame.ProcessInput(deltaTime, left_button);
 		// Update Game state
 		NewGame.Update(deltaTime, left_button);
 		// Both press and move of mouse will affect.
@@ -86,6 +86,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		NewGame.Render();
+
+		if (NewGame.man.life < 0.0) break;
 
 		// Render
 		glfwSwapBuffers(window);
@@ -101,7 +103,12 @@ int _tmain(int argc, _TCHAR* argv[])
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
+		glfwTerminate();
+		exit(0);
+	}
+
 	if (action == GLFW_PRESS)
 		NewGame.keys[key] = true;
 	else if (action == GLFW_RELEASE)

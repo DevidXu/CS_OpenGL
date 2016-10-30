@@ -43,31 +43,38 @@ public:
 	Man();
 	~Man();
 	glm::vec3 position;
+	int id;
+	float life, harm;
+	bool state;            // 0:stop; 1:move
+	float front;
+
 	void Init();
 	void Update(GLfloat deltatime, GLboolean *keys);
 	void Render(Camera &camera, glm::mat4 &projection, glm::mat4 &view, Gun &gun);
 	void SetShoot(bool ifshoot);
+	void SetState(bool ifmove);
+	void DeduceLife(float life);
 private:
 	Body body[10];
 	int bone_num;
 
-	float life;
-	int state;            // 0:stop; 1:move
 	int jump;             // 0:not jump 1:jump
-	bool shoot;           // 0:no shoot  1: shoot
-
-	void Run(GLfloat deltatime, GLboolean *keys);
-	void Jump(GLfloat deltatime, GLboolean *keys);
 
 protected:
 	Node* node[10];
 	Post post;
+	bool shoot;           // 0:no shoot  1: shoot
+
+	void Run(GLfloat deltatime, GLboolean *keys);
+	void Jump(GLfloat deltatime, GLboolean *keys);
 };
 
 class MainMan :public Man
 {
 public:
+	void Update(GLfloat deltatime, GLboolean* keys);
 	void GetPostion(Camera &camera);
+	void GivePosition(Camera &camera);
 	void Render(Camera &camera, glm::mat4 &projection, glm::mat4 &view, Gun &gun);
 };
 #endif

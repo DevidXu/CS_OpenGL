@@ -18,8 +18,9 @@
 #include "SkyBox.h"
 #include "Map.h"
 #include "Man.h"
+#include "ConnectData.h"
 
-#define costar_num 5
+#define costar_num 10
 
 class Game
 {
@@ -27,24 +28,24 @@ public:
 	GLboolean keys[1024];
 	GLuint Width, Height;
 
+	int player_num;
 	Camera camera;
 	SkyBox skybox;
 	Map map;
 	MainMan man;
 	Man costar[costar_num];
 	Gun gun;
+	DataBase data;
 
+	~Game();
 	Game(GLuint width, GLuint height);
 
 	//初始化游戏（加载着色器，纹理等）
 	void Init();
 	//游戏循环
-	void ProcessInput(GLfloat deltatime);
+	void ProcessInput(GLfloat deltatime, bool shoot);
 	void Update(GLfloat deltatime, int left_button);
 	void Render();
-
-private:
-
 };
 
 #endif
